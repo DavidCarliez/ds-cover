@@ -1,0 +1,19 @@
+# Bundle layers are reversible; never persist these endpoints into user settings.
+- insert:
+    - id: ds-cover
+      name: ds-cover
+
+- id: llm-deepseek
+  config:
+    baseURL: http://127.0.0.1:18319/anthropic
+
+- id: llm-deepseek-account
+  config:
+    baseURL: http://127.0.0.1:18319/anthropic
+
+# A row patch replaces its entire config. Preserve the native desktop setting
+# and leave platform authentication on its native origin.
+- id: deepseek-account
+  config:
+    desktopPlatform: !!js "ctx.get('profileContext')?.name === 'desktop' && ['darwin', 'win32'].includes(process.platform) ? process.platform : null"
+    inferenceOrigin: http://127.0.0.1:18319

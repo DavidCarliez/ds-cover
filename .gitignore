@@ -1,0 +1,17 @@
+node_modules/
+lib/
+artifacts/
+*.tgz
+.env*
+.cover-home/
+.config/
+.local/
+private/
+*.local.yaml
+*.local.yml
+/config.yaml
+/config.yml
+/policy.yaml
+/policy.yml
+*.key
+redactions.log
