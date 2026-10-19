@@ -1,29 +1,57 @@
 {
   "name": "ds-cover",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cover privacy protection for DeepSeek Harness, with a native web control panel.",
   "type": "module",
   "license": "Apache-2.0",
-  "engines": { "node": ">=22", "dsh": ">=0.2.1-rc.2 <0.3.0" },
+  "engines": {
+    "node": ">=22",
+    "dsh": ">=0.2.1-rc.2 <0.3.0"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node --test test/*.test.mjs"
+    "prepack": "npm run build",
+    "test": "node --test test/*.test.mjs",
+    "check:package": "node scripts/check-package.mjs"
   },
-  "files": ["lib", "bundle.yml", "README.md", "LICENSE"],
-  "exports": { ".": "./lib/server.js", "./client": "./lib/client.js", "./package.json": "./package.json", "./bundle.yml": "./bundle.yml" },
+  "files": [
+    "lib",
+    "bundle.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": "./lib/server.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json",
+    "./bundle.yml": "./bundle.yml"
+  },
   "dsh": {
     "manifestVersion": 1,
-    "bundle": { "patch": "./bundle.yml" },
+    "bundle": {
+      "patch": "./bundle.yml"
+    },
     "client": {
       "platform": "web",
-      "inject": ["@deepseek-ai/dsh-client-connection", "@deepseek-ai/dsh-client-ui-renderer", "@deepseek-ai/dsh-client-ui-model-selection"]
+      "inject": [
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-model-selection"
+      ]
     }
   },
-  "dependencies": { "yaml": "^2.8.1" },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  },
   "peerDependencies": {
     "@deepseek-ai/cordis": "~4.0.5",
     "@deepseek-ai/dsh-llm": "0.2.1-rc.2",
     "@deepseek-ai/schemastery": "~3.18.5"
   },
-  "devDependencies": { "esbuild": "^0.25.10", "react": "^18.3.1" }
+  "devDependencies": {
+    "@deepseek-ai/dsh-llm-deepseek": "0.2.1-rc.2",
+    "esbuild": "^0.25.10",
+    "react": "^18.3.1",
+    "react-test-renderer": "18.3.1"
+  }
 }

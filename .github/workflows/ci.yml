@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Cover 0.3.0
+        # Digests pinned from the published v0.3.0 release API and checksums.txt.
+        env:
+          COVER_VERSION: '0.3.0'
+          COVER_TARBALL: cover_0.3.0_linux_amd64.tar.gz
+          COVER_TARBALL_SHA256: 7e4c47f94540e8f23fc362252e87bb7650fa033910ef3c3ac528360125972a7d
+          COVER_CHECKSUMS_SHA256: 6b06690fd22b299347f9161df4970d9651a1baf6f9c4a50b3be60d0169383981
+        run: |
+          set -euo pipefail
+          base="https://github.com/DavidCarliez/cover/releases/download/v${COVER_VERSION}"
+          archive="${RUNNER_TEMP}/${COVER_TARBALL}"
+          checksums="${RUNNER_TEMP}/cover-${COVER_VERSION}-checksums.txt"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --output "$archive" "$base/$COVER_TARBALL"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --output "$checksums" "$base/checksums.txt"
+          printf '%s  %s\n' "$COVER_CHECKSUMS_SHA256" "$checksums" | sha256sum --check --strict
+          expected="$(awk -v asset="$COVER_TARBALL" '$2 == asset { print $1 }' "$checksums")"
+          test -n "$expected"
+          test "$expected" = "$COVER_TARBALL_SHA256"
+          printf '%s  %s\n' "$expected" "$archive" | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/cover-bin"
+          tar --extract --gzip --file "$archive" --directory "$RUNNER_TEMP/cover-bin"
+          "$RUNNER_TEMP/cover-bin/cover" version
+          echo "COVER_BIN=$RUNNER_TEMP/cover-bin/cover" >> "$GITHUB_ENV"
+
+      - name: Build bundles
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Check clean-source package
+        run: npm run check:package

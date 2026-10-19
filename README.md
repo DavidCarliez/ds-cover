@@ -16,16 +16,18 @@ npm run build
 dsh plugin --profile web add "link:$PWD"
 ```
 
-Open the harness, click the **Cover** lock, then select **Start**. Alternatively, run `/cover start` in a session.
+Open the harness, click the **Cover** lock, review **Setup checks**, then select **Start**. Alternatively, run `/cover start` in a session.
 
 **Protection starts enabled; automatic fallback starts disabled.** Until the daemon is running, native DeepSeek requests are blocked rather than sent unprotected. Install, restart, or disable the plugin only when no generation is active.
 
 ## Using Cover
 
-- **Overview:** toggle protection, manage the daemon, run diagnostics, download local detection models, or update/roll back Cover.
-- **Policy:** edit and validate the full YAML policy, including custom detectors and all six actions: `allow`, `placeholder`, `pseudonymize`, `mask`, `redact`, and `block`. Restart the daemon after saving.
+- **Overview:** toggle protection, manage the daemon, and check setup and health. **Advanced management** contains model downloads and Cover updates/rollbacks.
+- **Policy:** edit and validate the full YAML policy, including custom detectors and all six actions: `allow`, `placeholder`, `pseudonymize`, `mask`, `redact`, and `block`. Drafts survive tab switches; closing asks before discarding unsaved changes.
 - **Inspect:** preview a request's transformations locally, without sending it to DeepSeek.
 - **Activity:** view request metadata, or explicitly enable a temporary live view of sensitive content.
+
+Saved changes remain marked **pending restart** until Cover reloads them. Starting an already-running daemon does not apply changes. The lock also warns when automatic fallback is enabled, even while Cover is healthy.
 
 The lock describes the selected provider's **next request**, not all traffic on the machine:
 
@@ -46,7 +48,7 @@ Session commands: `/cover status`, `on`, `off`, `start`, `stop`, `restart`, `doc
 
 Runtime files live outside the repository in `~/.local/share/ds-cover`. The policy is at `.config/cover/config.yaml` inside that directory.
 
-On first use, ds-cover imports an existing `~/.config/cover/config.yaml` policy, if present; otherwise it uses Cover's stock defaults. It assigns separate routing, key, and log settings without changing the original configuration or daemon. Later edits to the original policy are not imported automatically.
+On first use, ds-cover validates and imports an existing `~/.config/cover/config.yaml` policy, if present; otherwise it uses Cover's stock defaults. It assigns separate routing, key, and log settings without changing the original configuration or daemon. Later edits to the original policy are not imported automatically.
 
 **Personal policies, allowlists, keys, and logs are not shipped or committed.** Repository test rules are synthetic. The policy editor changes only the private runtime configuration.
 
@@ -54,7 +56,7 @@ Protection has limits:
 
 - Only native DeepSeek API-key and account providers are covered. Other providers, shell commands, browser traffic, MCP tools, sign-in, and telemetry are outside this boundary.
 - Connection credentials still reach DeepSeek. Images and opaque attachments are not scanned; use `media.images: block` when image content must not leave.
-- Previews and opt-in live captures can expose sensitive content to the authenticated browser. Use a trusted connection and avoid screen sharing. Abandoned live views expire within 15 seconds.
+- Previews and opt-in live captures can expose sensitive content to the authenticated browser. Use a trusted connection and avoid screen sharing. Live views clear on connection resets; abandoned views expire within 15 seconds.
 - Removing or disabling the plugin restores the underlying provider routing. Stopping only the daemon leaves protection enabled and requests blocked, unless fallback is enabled.
 
 See [Cover's security boundary](https://github.com/DavidCarliez/cover#security-boundary) for detector and protocol limits.
@@ -64,9 +66,12 @@ See [Cover's security boundary](https://github.com/DavidCarliez/cover#security-b
 ```sh
 npm test
 npm run build
+npm run check:package
 ```
 
-Tests use the real Cover binary with temporary configurations and loopback upstreams, not cloud model calls. They cover redaction, streaming restoration, policy actions, authentication/session headers, and failure handling.
+Tests use the real Cover binary and native DeepSeek adapter with temporary policies and loopback upstreams—no cloud model calls. They cover policy actions, streaming/tool restoration, authentication, fail-closed routing, policy activation, and client lifecycle. CI runs on Node.js 22 and 24.
+
+`npm pack` builds bundles automatically. `check:package` verifies a clean-source package and loads its host and client entry points.
 
 Rebuild after source edits. Client changes reload through the harness; host changes require profile recomposition or restart unless HMR watches this repository.
 

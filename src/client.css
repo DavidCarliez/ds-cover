@@ -39,8 +39,11 @@ body[data-ds-dark-theme] .dsc-lock {
 .dsc-lock:hover { background: var(--dsc-hover); border-color: var(--dsc-muted); }
 .dsc-lock > svg { width: 15px; height: 15px; flex: none; color: var(--dsc-tone, var(--dsc-muted)); }
 .dsc-lock-brand { font-weight: 650; color: var(--dsc-label); }
-.dsc-footer { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 40px; padding: 5px 14px; border-top: 1px solid var(--dsc-border); background: var(--dsc-surface); }
+.dsc-lock-fallback { color: var(--dsc-warning); font-size: 10px; font-weight: 650; border-left: 1px solid var(--dsc-border); padding-left: 7px; }
+.dsc-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px; min-height: 40px; padding: 5px 14px; border-top: 1px solid var(--dsc-border); background: var(--dsc-surface); }
 .dsc-footer-caption { font-size: 11px; color: var(--dsc-muted); }
+.dsc-footer-warning { display: inline-flex; align-items: center; gap: 6px; color: var(--dsc-warning); font-size: 11px; font-weight: 600; }
+.dsc-footer-warning::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
 .dsc-tone-protected { --dsc-tone: var(--dsc-good); }
 .dsc-tone-blocked { --dsc-tone: var(--dsc-bad); }
 .dsc-tone-fallback, .dsc-tone-off, .dsc-tone-unconfigured { --dsc-tone: var(--dsc-warning); }
@@ -55,6 +58,12 @@ body[data-ds-dark-theme] .dsc-lock {
 .dsc-cards > div { min-width: 0; border: 1px solid var(--dsc-border); border-radius: 10px; padding: 12px 14px; }
 .dsc-cards span { display: block; font-size: 11px; color: var(--dsc-muted); margin-bottom: 4px; }
 .dsc-cards strong { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.dsc-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 0 28px 16px; color: var(--dsc-muted); font-size: 11px; }
+.dsc-meta strong { color: var(--dsc-label); font-weight: 600; }
+.dsc-alert { padding: 0 28px; }
+.dsc-alert .dsc-notice { margin: 0 0 14px; }
+.dsc-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 28px 14px; padding: 12px 14px; border: 1px solid color-mix(in srgb, var(--dsc-warning) 45%, var(--dsc-border)); border-left: 3px solid var(--dsc-warning); border-radius: 7px; background: color-mix(in srgb, var(--dsc-warning) 7%, transparent); font-size: 12px; color: var(--dsc-label); }
+.dsc-banner .dsc-button { flex: none; }
 .dsc-tabs { display: flex; gap: 6px; padding: 0 28px; border-bottom: 1px solid var(--dsc-border); }
 .dsc-tabs button { background: transparent; color: var(--dsc-muted); border: none; border-bottom: 2px solid transparent; border-radius: 5px 5px 0 0; font-size: 13px; padding: 11px 15px; margin-bottom: -1px; }
 .dsc-tabs button:hover { background: var(--dsc-hover); color: var(--dsc-label); }
@@ -65,6 +74,19 @@ body[data-ds-dark-theme] .dsc-lock {
 .dsc-section > p { margin-top: 7px; margin-bottom: 14px; }
 .dsc-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
 .dsc-section-heading > span { color: var(--dsc-muted); font-size: 11px; }
+.dsc-checks { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.dsc-check { display: grid; grid-template-columns: 62px 150px minmax(0, 1fr); gap: 10px; align-items: baseline; padding-top: 8px; border-top: 1px solid var(--dsc-border); font-size: 12px; }
+.dsc-check:first-child { padding-top: 0; border-top: none; }
+.dsc-check-state { font-size: 10px; font-weight: 650; letter-spacing: .45px; text-transform: uppercase; }
+.dsc-check-ok .dsc-check-state { color: var(--dsc-good); }
+.dsc-check-warning .dsc-check-state { color: var(--dsc-warning); }
+.dsc-check-error .dsc-check-state { color: var(--dsc-bad); }
+.dsc-check-label { font-weight: 600; color: var(--dsc-label); overflow-wrap: anywhere; }
+.dsc-check-message { color: var(--dsc-muted); overflow-wrap: anywhere; }
+.dsc-advanced { margin-top: 18px; border: 1px solid var(--dsc-border); border-radius: 9px; padding: 0 15px; }
+.dsc-advanced > summary { cursor: pointer; color: var(--dsc-label); font-weight: 600; padding: 13px 1px; }
+.dsc-advanced[open] > summary { border-bottom: 1px solid var(--dsc-border); }
+.dsc-advanced .dsc-section:last-child { padding-bottom: 18px; }
 .dsc-setting { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
 .dsc-setting + .dsc-setting { margin-top: 23px; padding-top: 20px; border-top: 1px solid var(--dsc-border); }
 .dsc-setting p { margin-top: 6px; font-size: 12px; max-width: 590px; }
@@ -122,6 +144,12 @@ body[data-ds-dark-theme] .dsc-lock {
   .dsc-cards { padding: 0 16px 19px; gap: 7px; grid-template-columns: 1fr 1fr; }
   .dsc-cards > div { padding: 10px; }
   .dsc-cards > div:first-child { grid-column: 1 / -1; }
+  .dsc-meta { padding: 0 16px 14px; }
+  .dsc-alert { padding: 0 16px; }
+  .dsc-banner { margin: 0 16px 14px; flex-wrap: wrap; }
+  .dsc-check { grid-template-columns: 58px minmax(0, 1fr); gap: 4px 10px; }
+  .dsc-check-message { grid-column: 2; }
+  .dsc-advanced { padding: 0 11px; }
   .dsc-tabs { padding: 0 12px; gap: 0; }
   .dsc-tabs button { flex: 1; padding: 11px 7px; font-size: 12px; }
   .dsc-tabpanel { padding: 0 16px 18px; }

@@ -15,3 +15,5 @@ private/
 /policy.yml
 *.key
 redactions.log
+/plugin.json
+/applied-policy.json*
